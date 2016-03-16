@@ -16,7 +16,8 @@ function SvgProcessor (inputTree, options) {
 	this.inputTree = inputTree;
 
 	this.options = {
-		outputFile: "/images.svg"
+		outputFile: "/images.svg",
+		prefix: ''
 	};
 
 	for (key in options) {
@@ -42,7 +43,7 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 				var stat = fs.statSync(srcDir + "/" + inputFiles[i]);
 				if (stat && stat.isFile()) {
 					var fileContents = fs.readFileSync(srcDir + "/" + inputFiles[i], { encoding: "utf8" });
-					output.push(parseSvg(inputFiles[i], fileContents));
+					output.push(parseSvg(inputFiles[i], fileContents, self.options));
 				}
 			}
 
@@ -63,12 +64,12 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 };
 
-function parseSvg (filename, fileContents) {
+function parseSvg (filename, fileContents, options) {
 
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		$outputContents = cheerio.load("<symbol id='" + options.prefix + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());

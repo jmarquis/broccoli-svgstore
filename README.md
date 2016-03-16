@@ -21,7 +21,8 @@ The filter accepts one input tree full of SVG files and outputs a tree with a si
 var svgstore = require("broccoli-svgstore");
 
 var outputTree = svgstore(inputTree, {
-  outputFile: "/assets/icons.svg"
+  outputFile: "/assets/icons.svg",
+  prefix: "" // prefix for the `id` attribute on the generated `symbol`s in the `ouputFile`
 });
 ```
 
