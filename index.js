@@ -16,7 +16,8 @@ function SvgProcessor (inputTree, options) {
 	this.inputTree = inputTree;
 
 	this.options = {
-		outputFile: "/images.svg"
+		outputFile: "/images.svg",
+		flatten: true
 	};
 
 	for (key in options) {
@@ -64,11 +65,12 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 };
 
 function parseSvg (filename, fileContents) {
+	var id = this.options.flatten ? path.basename(filename) : filename;
 
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		$outputContents = cheerio.load("<symbol id='" + id.replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());
