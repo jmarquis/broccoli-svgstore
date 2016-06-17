@@ -25,6 +25,17 @@ var outputTree = svgstore(inputTree, {
 });
 ```
 
+The tree may flatten the directory structure and use file names as symbol ids (default)
+or retain the file paths as symbol ids using the `flatten` option.
+
+```javascript
+var svgstore = require("broccoli-svgstore");
+
+var outputTree = svgstore(inputTree, {
+  flatten: false
+});
+```
+
 Inject the file into an HTML document and use `<svg><use xlink:href="icon-name"></svg>` to place an image on the page.
 
 

@@ -16,7 +16,8 @@ function SvgProcessor (inputTree, options) {
 	this.inputTree = inputTree;
 
 	this.options = {
-		outputFile: "/images.svg"
+		outputFile: "/images.svg",
+		flatten: true
 	};
 
 	for (key in options) {
@@ -33,7 +34,7 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 	return readTree(this.inputTree).then(function (srcDir) {
 
-		var output = ["<svg xmlns='http://www.w3.org/2000/svg' style='display: none'>"];
+		var output = ["<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' style='display: none'>"];
 
 		try {
 
@@ -42,7 +43,7 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 				var stat = fs.statSync(srcDir + "/" + inputFiles[i]);
 				if (stat && stat.isFile()) {
 					var fileContents = fs.readFileSync(srcDir + "/" + inputFiles[i], { encoding: "utf8" });
-					output.push(parseSvg(inputFiles[i], fileContents));
+					output.push(parseSvg(inputFiles[i], fileContents, self.options.flatten));
 				}
 			}
 
@@ -63,12 +64,13 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 };
 
-function parseSvg (filename, fileContents) {
+function parseSvg (filename, fileContents, flatten) {
+	var id = flatten ? path.basename(filename) : filename;
 
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		$outputContents = cheerio.load("<symbol id='" + id.replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());
