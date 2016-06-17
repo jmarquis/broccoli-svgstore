@@ -34,7 +34,7 @@ SvgProcessor.prototype.write = function (readTree, destDir) {
 
 	return readTree(this.inputTree).then(function (srcDir) {
 
-		var output = ["<svg xmlns='http://www.w3.org/2000/svg' style='display: none'>"];
+		var output = ["<svg xmlns='http://www.w3.org/2000/svg' xmlns:xlink='http://www.w3.org/1999/xlink' style='display: none'>"];
 
 		try {
 
