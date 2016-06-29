@@ -1,78 +1,86 @@
-var fs = require("fs"),
-	path = require("path"),
-	mkdirp = require("mkdirp"),
-	Writer = require("broccoli-writer"),
-	helpers = require("broccoli-kitchen-sink-helpers"),
-	cheerio = require("cheerio");
+'use strict';
 
-module.exports = SvgProcessor;
-SvgProcessor.prototype = Object.create(Writer.prototype);
+var fs = require('fs');
+var merge = require('merge');
+var path = require('path');
+var mkdirp = require('mkdirp');
+var CachingWriter = require('broccoli-caching-writer');
+var helpers = require('broccoli-kitchen-sink-helpers');
+
+var svgToSymbol = require('./utils/svg-to-symbol');
+
+var defaultSettings = {
+  outputFile: '/images.svg',
+  annotation: 'SVGStore Processor'
+};
+
+// TOOD: Perhaps be a bit more robust (and thus, more explicit about the proper API) with validation
+var validationErrorPrefix = 'Expected a non-falsey argument for `_inputNode`, got ';
+
+function SvgProcessor(_inputNode, _options) {
+  if (!(this instanceof SvgProcessor)) {
+    return new SvgProcessor(_inputNode, _options);
+  }
+
+  var options = merge(defaultSettings, _options);
+  if (options.name != null) {
+    this._name = options.name;
+  } else {
+    this._name = (this.constructor && this.constructor.name != null) ? this.constructor.name : 'SVGStore';
+  }
+  this._annotation = options.annotation;
+  this._options = options;
+  
+  var label = this._name + ' (' + this._annotation + ')';
+  if (!_inputNode) { 
+    throw new TypeError(label + ': ' + validationErrorPrefix + _inputNode);
+  }
+
+  var inputNodes = Array.isArray(_inputNode) ? _inputNode : [_inputNode];
+
+  CachingWriter.call(this, inputNodes, this._options);
+}
+
+SvgProcessor.prototype = Object.create(CachingWriter.prototype);
 SvgProcessor.prototype.constructor = SvgProcessor;
+SvgProcessor.prototype.description = 'svgstore';
+module.exports = SvgProcessor;
 
-function SvgProcessor (inputTree, options) {
 
-	if (!(this instanceof SvgProcessor)) return new SvgProcessor(inputTree, options);
+SvgProcessor.prototype.build = function () {
 
-	this.inputTree = inputTree;
+  var output = ['<svg xmlns="http://www.w3.org/2000/svg" style="display: none">'];
 
-	this.options = {
-		outputFile: "/images.svg"
-	};
+  try {
+    var srcDir, inputFiles, inputFilePath, stat;
+    for (var i = 0; i < this.inputPaths.length; i++) {
+      srcDir = this.inputPaths[i];
+      inputFiles = helpers.multiGlob(["**/*.svg"], { cwd: srcDir });
 
-	for (key in options) {
-		if (options.hasOwnProperty(key)) {
-			this.options[key] = options[key];
-		}
-	}
+      for (var j = 0; j < inputFiles.length; j++) {
+        inputFilePath = path.join(srcDir, inputFiles[j]);
+        stat = fs.statSync(inputFilePath);
 
-};
+        if (stat && stat.isFile()) {
+          var fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
+          output.push(svgToSymbol(inputFilePath, fileContents));
+        }
+      }
+    }
+  } catch (error) {
+    if (!error.message.match("did not match any files")) {
+      throw error;
+    }
+  }
 
-SvgProcessor.prototype.write = function (readTree, destDir) {
+  output.push("</svg>");
 
-	var self = this;
+  helpers.assertAbsolutePaths([this.outputPath]); // TODO: Necessary?
 
-	return readTree(this.inputTree).then(function (srcDir) {
+  var concatenatedOutput = output.join("\n");
+  var outputDestination = path.join(this.outputPath, this._options.outputFile);
 
-		var output = ["<svg xmlns='http://www.w3.org/2000/svg' style='display: none'>"];
+  mkdirp.sync(path.dirname(outputDestination));
 
-		try {
-
-			var inputFiles = helpers.multiGlob(["**/*.svg"], { cwd: srcDir });
-			for (var i = 0; i < inputFiles.length; i++) {
-				var stat = fs.statSync(srcDir + "/" + inputFiles[i]);
-				if (stat && stat.isFile()) {
-					var fileContents = fs.readFileSync(srcDir + "/" + inputFiles[i], { encoding: "utf8" });
-					output.push(parseSvg(inputFiles[i], fileContents));
-				}
-			}
-
-		} catch (error) {
-			if (!error.message.match("did not match any files")) {
-				throw error;
-			}
-		}
-
-		output.push("</svg>");
-
-		helpers.assertAbsolutePaths([self.options.outputFile]);
-		mkdirp.sync(path.join(destDir, path.dirname(self.options.outputFile)));
-		var concatenatedOutput = output.join("\n");
-		fs.writeFileSync(path.join(destDir, self.options.outputFile), concatenatedOutput);
-
-	});
-
-};
-
-function parseSvg (filename, fileContents) {
-
-	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
-		$svg = $fileContents("svg"),
-		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + path.basename(filename).replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
-		$symbol = $outputContents("symbol");
-
-	$symbol.html($svg.html());
-
-	return $outputContents.html();
-
+  return fs.writeFileSync(outputDestination, concatenatedOutput);
 };
