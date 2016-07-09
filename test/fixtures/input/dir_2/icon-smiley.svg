@@ -1,0 +1,30 @@
+<svg id="smiley-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <style>
+      .cls-1, .cls-2, .cls-3 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-1 {
+        stroke-width: 1px;
+      }
+
+      .cls-3 {
+        stroke-width: 0.9px;
+      }
+    </style>
+  </defs>
+  <title>icon</title>
+  <g id="smiley">
+    <g>
+      <path class="cls-1" d="M14.75,29.42c2.75,7.11,9,6.94,9,6.94"/>
+      <path class="cls-1" d="M32.75,29.42c-2.75,7.11-9,6.94-9,6.94"/>
+    </g>
+    <path class="cls-2" d="M25.62,24c0-3.91-3.26-4.34-3.26,0"/>
+    <path class="cls-2" d="M35.7,16.08c-1.22-2.31-3.42,3-5.1.11"/>
+    <path class="cls-2" d="M12.55,16.08c1.22-2.31,3.42,3,5.1.11"/>
+    <circle class="cls-3" cx="24" cy="24" r="19.81"/>
+  </g>
+</svg>
