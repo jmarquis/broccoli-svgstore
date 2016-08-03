@@ -1,19 +1,21 @@
 var fs = require("fs"),
 	path = require("path"),
 	mkdirp = require("mkdirp"),
-	Writer = require("broccoli-writer"),
+	Plugin = require("broccoli-caching-writer"),
 	helpers = require("broccoli-kitchen-sink-helpers"),
 	cheerio = require("cheerio");
 
 module.exports = SvgProcessor;
-SvgProcessor.prototype = Object.create(Writer.prototype);
+SvgProcessor.prototype = Object.create(Plugin.prototype);
 SvgProcessor.prototype.constructor = SvgProcessor;
 
 function SvgProcessor (inputTree, options) {
 
-	if (!(this instanceof SvgProcessor)) return new SvgProcessor(inputTree, options);
-
 	this.inputTree = inputTree;
+
+	Plugin.call(this, [inputTree], {
+		annotation: options.annotation
+	});
 
 	this.options = {
 		outputFile: "/images.svg"
@@ -27,11 +29,12 @@ function SvgProcessor (inputTree, options) {
 
 };
 
-SvgProcessor.prototype.write = function (readTree, destDir) {
+SvgProcessor.prototype.build = function () {
 
 	var self = this;
+	var destDir = this.outputPath;
 
-	return readTree(this.inputTree).then(function (srcDir) {
+	this.inputPaths.forEach(function (srcDir) {
 
 		var output = ["<svg xmlns='http://www.w3.org/2000/svg' style='display: none'>"];
 
