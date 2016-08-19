@@ -70,7 +70,16 @@ function parseSvg (filename, fileContents, flatten) {
 	var $fileContents = cheerio.load(fileContents, { xmlMode: true }),
 		$svg = $fileContents("svg"),
 		viewBox = $svg.attr("viewBox"),
-		$outputContents = cheerio.load("<symbol id='" + id.replace(/\.[^/.]+$/, "") + "' viewBox='" + viewBox + "'></symbol>", { xmlMode: true }),
+		preserveAspectRatio = $svg.attr("preserveAspectRatio"),
+		$outputContents = cheerio.load(
+                  "<symbol" +
+                    " id='" + id.replace(/\.[^/.]+$/, "") + "'" +
+                    " viewBox='" + viewBox + "'" +
+                    " preserveAspectRatio='" + preserveAspectRatio + "'" +
+                  ">" +
+                  "</symbol>",
+                  { xmlMode: true }
+                ),
 		$symbol = $outputContents("symbol");
 
 	$symbol.html($svg.html());
