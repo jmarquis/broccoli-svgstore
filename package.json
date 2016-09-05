@@ -24,9 +24,9 @@
   },
   "homepage": "https://github.com/svgstore/broccoli-svgstore",
   "dependencies": {
-    "broccoli-caching-writer": "3.0.0",
+    "broccoli-caching-writer": "3.0.3",
     "broccoli-kitchen-sink-helpers": "0.3.1",
-    "cheerio": "^0.20.0",
+    "cheerio": "^0.22.0",
     "mkdirp": "^0.5.1",
     "object-assign": "4.1.0",
     "svgstore": "1.1.0"
@@ -34,6 +34,6 @@
   "devDependencies": {
     "broccoli": "0.16.9",
     "chai": "3.5.0",
-    "mocha": "2.5.3"
+    "mocha": "3.0.2"
   }
 }
