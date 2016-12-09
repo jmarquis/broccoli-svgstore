@@ -28,7 +28,7 @@
     "broccoli-kitchen-sink-helpers": "0.3.1",
     "mkdirp": "^0.5.1",
     "object-assign": "4.1.0",
-    "svgstore": "1.1.0"
+    "svgstore": "2.0.2"
   },
   "devDependencies": {
     "broccoli": "0.16.9",
