@@ -7,6 +7,7 @@ var mkdirp = require('mkdirp');
 var CachingWriter = require('broccoli-caching-writer');
 var helpers = require('broccoli-kitchen-sink-helpers');
 var svgstore = require('svgstore');
+var assert = require('assert');
 
 var defaultSettings = {
   outputFile: '/images.svg',
@@ -83,7 +84,7 @@ SvgProcessor.prototype.build = function() {
     }
   }
 
-  helpers.assertAbsolutePaths([this.outputPath]); // ❓❓ QUESTION: Necessary?
+  assert(path.isAbsolute(this.outputPath), 'output path must be absolute'); // ❓❓ QUESTION: Necessary?
 
   var outputDestination = path.join(this.outputPath, this._options.outputFile);
 
