@@ -14,6 +14,11 @@ var defaultSettings = {
   svgstoreOpts: {},
 };
 
+var defaultSvgAttrs = {
+  xmlns: 'http://www.w3.org/2000/svg',
+  'xmlns:xlink': 'http://www.w3.org/1999/xlink'
+};
+
 // TOOD: Perhaps be a bit more robust (and thus, more explicit about the proper API) with validation
 var validationErrorPrefix = 'Expected a non-falsey argument for `_inputNode`, got ';
 
@@ -23,6 +28,9 @@ function SvgProcessor(_inputNode, _options) {
   }
 
   var options = objectAssign({}, defaultSettings, _options);
+
+  options.svgstoreOpts.svgAttrs = objectAssign({}, defaultSvgAttrs, options.svgstoreOpts.svgAttrs);
+
   if (options.name != null) {
     this._name = options.name;
   } else {

@@ -56,11 +56,13 @@ Within your markup, you should now be able to "use" each symbol inside of other 
   (starting from the root directory of your build destination).
 
   Required: `true`
+
   Default: `null`
 
 - `annotation` {string}: a [Broccoli Plugin annotation](https://github.com/broccolijs/broccoli-plugin#new-plugininputnodes-options)
 
   Required: `false`
+
   Default: `null`
 
 
@@ -68,7 +70,16 @@ Within your markup, you should now be able to "use" each symbol inside of other 
   - See: `svgstore`'s options [documentation](https://github.com/svgstore/svgstore#options)
 
   Required: `false`
-  Default: `{}`
+
+  Default:
+  ```js
+    {
+      svgAttrs: {
+        xmlns: 'http://www.w3.org/2000/svg',
+        'xmlns:xlink': 'http://www.w3.org/1999/xlink'
+      }
+    }
+  ```
 
 - `fileSettings` {Object}: a hash of per-file settings.
 That is, each root key should correspond to a file name of an SVG that
