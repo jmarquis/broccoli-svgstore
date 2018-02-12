@@ -11,7 +11,7 @@ var svgstore = require('svgstore');
 var defaultSettings = {
   outputFile: '/images.svg',
   annotation: 'SVGStore Processor',
-  svgstoreOpts: {},
+  svgstoreOpts: {}
 };
 
 // TOOD: Perhaps be a bit more robust (and thus, more explicit about the proper API) with validation
@@ -53,6 +53,7 @@ SvgProcessor.prototype.build = function() {
 
   var svgOutput = svgstore(this._options.svgstoreOpts);
   var fileSettings = this._options.fileSettings || {};
+  var prefix = this._options.prefix;
 
   try {
     // iterate through `inputPaths` of our `inputNodes` (`inputPaths` is an array of
@@ -70,7 +71,7 @@ SvgProcessor.prototype.build = function() {
           var fileNameWithoutExtension = inputFileName.replace(/\.[^\.]+$/, '');
           var fileContents = fs.readFileSync(inputFilePath, { encoding: 'utf8' });
           var inputFileSettings = fileSettings[fileNameWithoutExtension] || {};
-          var svgId = inputFileSettings.id || fileNameWithoutExtension;
+          var svgId = inputFileSettings.id || (prefix ? prefix + fileNameWithoutExtension : fileNameWithoutExtension);
           var fileSVGStoreOpts = inputFileSettings.svgstoreOpts || {};
 
           svgOutput.add(svgId, fileContents, fileSVGStoreOpts);
