@@ -32,7 +32,8 @@ function makeBuilderFromInputNodes(inputNodes, options) {
     outputFile: options.outputFile || OUTPUT_FILE,
     annotation: options.annotation || 'SVGStore Processor -- Tests',
     svgstoreOpts: options.svgstoreOpts || {},
-    fileSettings: options.fileSettings || {}
+    fileSettings: options.fileSettings || {},
+    prefix: options.prefix
   });
 
   return new broccoli.Builder(svgProcessor);
@@ -180,6 +181,44 @@ describe('SVGProcessor', function () {
         testForSymbols($, symbolIds);
       });
     });
+
+    it('prefixes all ids in the target outputFile if a prefix option is passed', function() {
+      var inputNodes = [SOURCE_DIR_GROUP_1];
+      var prefix = 'custom-prefix-';
+      builder = makeBuilderFromInputNodes(inputNodes, { prefix });
+
+      return builder.build().then(function(results) {
+        var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
+        var symbolIds = ID_MANIFEST[SOURCE_DIR_GROUP_1].map(function (id) {
+          return prefix + id;
+        });
+
+        testForSymbols(loadSVG(outputDestination), symbolIds);
+      });
+    });
+
+    it('per-file configurations overide prefix', function() {
+      var inputNodes = [SOURCE_DIR_GROUP_1];
+      // set a custom id for the second one
+      var customID = 'customID-2';
+      var fileSettings = {
+        [ID_MANIFEST[SOURCE_DIR_GROUP_1][1]]: { id: customID },
+      };
+      // prefix all others
+      var prefix = 'custom-prefix-';
+
+      builder = makeBuilderFromInputNodes(inputNodes, { fileSettings, prefix });
+
+      return builder.build().then(function (results) {
+        var outputDestination = path.join(results.directory, path.normalize(OUTPUT_FILE));
+        var symbolIds = ID_MANIFEST[SOURCE_DIR_GROUP_1].map(function (id) {
+          return prefix + id;
+        });
+        symbolIds[1] = customID;
+
+        var $ = loadSVG(outputDestination);
+        testForSymbols($, symbolIds);
+      });
+    });
   });
 });
-

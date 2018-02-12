@@ -70,6 +70,11 @@ Within your markup, you should now be able to "use" each symbol inside of other 
   Required: `false`
   Default: `{}`
 
+- `prefix` {string}: a prefix that will be prepended to each `<symbol>`'s id
+
+  Required: `false`
+  Default: `undefined`
+
 - `fileSettings` {Object}: a hash of per-file settings.
 That is, each root key should correspond to a file name of an SVG that
 will be found in this node. It's value should then be an Object with any of the following settings:

@@ -1,3 +1,7 @@
+# Unreleased
+
+- Add `prefix` option to prefix ids
+
 # 0.4.2 -- April 5, 2017
 
 - Remove unnecessary (and broken-in-Windows) check for absolute path on `this.outputPath` ([#31](https://github.com/svgstore/broccoli-svgstore/pull/31)).
