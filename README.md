@@ -16,7 +16,7 @@ SVGs with [`svgstore`](https://github.com/svgstore/svgstore)_
 
 
 ```shell
-npm install --save broccoli-svgstore
+npm install --save svgstore broccoli-svgstore
 ```
 
 ## Usage
